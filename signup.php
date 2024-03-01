@@ -1,4 +1,8 @@
-<?php
+<?php    //handles a form submission to sign up a user into the database
+
+session_start(); // Start the session to use session variables
+
+
 $servername= "localhost";
 $username="root";
 $password="";
@@ -31,9 +35,11 @@ if ($conn->query($sql)  === TRUE){
 }
 
 
+
+
 //close connection
 $conn->close();
 
-header("Location: home.html");
+header("Location:  services.html");
 exit();
 ?>

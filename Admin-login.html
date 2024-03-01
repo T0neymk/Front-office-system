@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="Admin-login.css">
+
+    <title>Admin Login</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="nav">
+            <div class="mytitle">
+                <a href="home.html"> <h3>Spa Front Office System</h3></a>
+               </div>
+        </div>
+
+        <div class="form-box">
+            <div class="login-container" id="login" >
+                <div class="top">
+                 <!---- <span>Don't have an account? <a href="#" onclick="register()">Sign Up</a></span>--->
+                  <header>Admin Login</header>
+                </div>
+                <form action="login.php" method="post">
+                <div class="input-box">
+                  <input type="text" class="input-field" name="emlog"  placeholder=" Email">
+                  <i class="bx bx-user"></i>
+                </div>
+                <div class="input-box">
+                  <input type="password" class="input-field" name="passlog"   placeholder="Password">
+                  <i class="bx bx-lock-alt"></i>
+                </div>
+                <div class="input-box">
+                  <input type="Submit" class="submit" value="Sign In">
+                </div>
+              </form>
+                <div class="two-col">
+                  <div class="one">
+                    <input type="checkbox"  id="login-check">
+                    <label for="login-check">Remember Me</label>
+                  </div>
+                  <div class="two">
+                    <!--<label><a href="#" id="forgotpbtn" onclick="forgotp()">Forgot password</a></label>-->
+                  </div>
+                </div>
+              </div>
+        </div>
+    </div>
+</body>
+</html>

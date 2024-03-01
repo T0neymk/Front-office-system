@@ -1,5 +1,8 @@
 
 <?php
+session_start(); // Start the session to use session variables
+
+
 $servername= "localhost";
 $username="root";
 $password="";
@@ -33,7 +36,7 @@ if ($result->num_rows>0){
   // if (password_verify($password,$row['password'])){
     $_SESSION['fname'] = $row['fname'];
     $_SESSION['email'] = $row['email'];
-    header("location: /donation/home.html");
+    header("location: services.html");
     exit();
   // }else{
     // echo"password did not match";
