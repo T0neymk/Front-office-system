@@ -1,45 +1,38 @@
-<?php    //handles a form submission to sign up a user into the database
-
+<?php
 session_start(); // Start the session to use session variables
 
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "userdb";
 
-$servername= "localhost";
-$username="root";
-$password="";
-$dbname="userdb";
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-//create connection
-$conn= new mysqli($servername,$username,$password,$dbname);
-
-
-//check connection
-if($conn->connect_error){
-  die("connection failed:"  .$conn->connect_error);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
-//Retrieve data
+// Retrieve data
 $fname = $_POST['fname'];
 $lname = $_POST['lname'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-// sql query to insert the data
-$sql  = "INSERT INTO signup(fname,lname,email,password)VALUES('$fname','$lname','$email','$password')";
+// SQL query to insert the data into the 'users' table
+$sql = "INSERT INTO users (first_name, last_name, email, password) VALUES ('$fname', '$lname', '$email', '$password')";
 
-//check if the sql query has been executed successfully
-
-if ($conn->query($sql)  === TRUE){
-  echo "signup successfull";
-}else{
-  echo "error: " . $sql ."<br>" .$conn->error;
+// Check if the SQL query has been executed successfully
+if ($conn->query($sql) === TRUE) {
+    echo "Signup successful";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
 }
 
-
-
-
-//close connection
+// Close connection
 $conn->close();
 
-header("Location:  services.html");
+header("Location: services.html");
 exit();
 ?>
