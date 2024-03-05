@@ -1,9 +1,9 @@
 <?php
 // Database connection
-$servername = "localhost"; // Assuming the database is hosted locally
-$username = "root"; // Your MySQL username
-$password = ""; // Your MySQL password (if any)
-$dbname = "spa-front-office"; // Name of your database
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "spa-front-office";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -17,18 +17,18 @@ if ($conn->connect_error) {
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-// Retrieve redirect URL
-$redirect_url = isset($_POST['redirect_url']) ? $_POST['redirect_url'] : 'default_page.php'; // Set a default page in case redirect_url is not provided
-
 // SQL query to fetch user from database
 $sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
 $result = $conn->query($sql);
 
 // Check if user exists
 if ($result->num_rows > 0) {
-    // User found, redirect to desired page
-    header("Location: $redirect_url");
-    exit();
+    // User found, set login status in localStorage
+    echo "Login successful";
+    echo "<script>localStorage.setItem('isLoggedIn', 'true');</script>";
+    
+    // Redirect to services.html
+    echo "<script>window.location.href = 'services.html';</script>";
 } else {
     // User not found or incorrect credentials
     echo "Invalid email or password. Please try again.";
@@ -36,3 +36,4 @@ if ($result->num_rows > 0) {
 
 // Close connection
 $conn->close();
+?>

@@ -53,7 +53,7 @@
           <li><a href="#whatwe">Services</a></li>
           <li><a href="#contactx">Contacts</a></li>
           <a href="Admin-login.html"
-            ><button style="border-radius: 10px">Admin Login Here</button></a
+            ><button style="border-radius: 10px">Admin Login</button></a
           >
         </ul>
       </nav>
@@ -70,6 +70,9 @@
         <a href="#" onclick="bookNow()">
           <button style="border-radius: 10px">Book Now</button></a
         >
+        <button id="logoutBtn" onclick="logout()" style="border-radius: 10px">
+          Logout
+        </button>
       </div>
     </header>
 
@@ -191,15 +194,32 @@
         speedAsDuration: true,
       });
 
-      //check if user is logged in
       function bookNow() {
-        var isLoggedIn = false;
+        var isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
         if (isLoggedIn) {
           window.location.href = "services.html";
         } else {
           window.location.href = "login.html";
         }
       }
+
+      function logout() {
+        localStorage.removeItem("isLoggedIn"); // Clear login status
+        window.location.href = "index.html"; // Redirect to index.html
+      }
+
+      // Check login status on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        var isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+        var logoutBtn = document.getElementById("logoutBtn");
+
+        if (isLoggedIn) {
+          logoutBtn.style.display = "inline-block"; // Show logout button
+        } else {
+          logoutBtn.style.display = "none"; // Hide logout button
+        }
+      });
     </script>
   </body>
 </html>
