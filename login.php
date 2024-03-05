@@ -1,56 +1,38 @@
-
 <?php
-session_start(); // Start the session to use session variables
+// Database connection
+$servername = "localhost"; // Assuming the database is hosted locally
+$username = "root"; // Your MySQL username
+$password = ""; // Your MySQL password (if any)
+$dbname = "spa-front-office"; // Name of your database
 
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-$servername= "localhost";
-$username="root";
-$password="";
-$dbname="userdb";
-
-//create connection
-$conn= new mysqli($servername,$username,$password,$dbname);
-
-
-//check connection
-if($conn->connect_error){
-  die("connection failed:"  .$conn->connect_error);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
-//Retrieve data 
-$email =$_POST['emlog'];
-$password =$_POST['passlog'];
+// Form data
+$email = $_POST['email'];
+$password = $_POST['password'];
 
-//sql query to validate the input
-$sql = "SELECT * FROM signup WHERE email ='$email' AND password ='$password'  ";
+// Retrieve redirect URL
+$redirect_url = isset($_POST['redirect_url']) ? $_POST['redirect_url'] : 'default_page.php'; // Set a default page in case redirect_url is not provided
 
+// SQL query to fetch user from database
+$sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
 $result = $conn->query($sql);
 
-
-//validate the input
-
-if ($result->num_rows>0){
-  $row = $result->fetch_assoc();
-
-  //verify password
-  // if (password_verify($password,$row['password'])){
-    $_SESSION['fname'] = $row['fname'];
-    $_SESSION['email'] = $row['email'];
-    header("location: services.html");
+// Check if user exists
+if ($result->num_rows > 0) {
+    // User found, redirect to desired page
+    header("Location: $redirect_url");
     exit();
-  // }else{
-    // echo"password did not match";
-  // }
-}else{
-  echo"user not found or incorrect details";
+} else {
+    // User not found or incorrect credentials
+    echo "Invalid email or password. Please try again.";
 }
 
-//close connection
+// Close connection
 $conn->close();
-
-
-
-
-
-?>
-

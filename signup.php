@@ -1,38 +1,35 @@
 <?php
-session_start(); // Start the session to use session variables
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Establish connection to the database
+    $servername = "localhost"; // Change if your database server is on a different host
+    $username = "root"; // Change if you have a different username for the database
+    $password = ""; // Change if you have set a password for the database
+    $dbname = "spa-front-office"; // Name of the database
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "userdb";
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    // Prepare and bind parameters
+    $stmt = $conn->prepare("INSERT INTO users (fname, lname, email, password) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $fname, $lname, $email, $password);
+
+    // Set parameters and execute
+    $fname = $_POST['fname'];
+    $lname = $_POST['lname'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    if ($stmt->execute() === TRUE) {
+        echo "New record created successfully";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
 }
-
-// Retrieve data
-$fname = $_POST['fname'];
-$lname = $_POST['lname'];
-$email = $_POST['email'];
-$password = $_POST['password'];
-
-// SQL query to insert the data into the 'users' table
-$sql = "INSERT INTO users (first_name, last_name, email, password) VALUES ('$fname', '$lname', '$email', '$password')";
-
-// Check if the SQL query has been executed successfully
-if ($conn->query($sql) === TRUE) {
-    echo "Signup successful";
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
-
-// Close connection
-$conn->close();
-
-header("Location: services.html");
-exit();
-?>
