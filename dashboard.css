@@ -3,6 +3,12 @@ body {
     background-color: #f0f0f0;
     margin: 0;
     padding: 0;
+    background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url(images/wellness.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+
 }
 
 .container {
@@ -11,11 +17,14 @@ body {
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background */
+    backdrop-filter: blur(8px); /* Apply blur effect */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 h1 {
     text-align: center;
+    color: #fff;
 }
 
 .cards {
@@ -24,19 +33,24 @@ h1 {
     gap: 20px;
 }
 
-.card {
-    background-color: #fff;
-    border-radius: 8px;
+.cards {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+   
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
+
 }
 
-.card h3 {
+.cards h3 {
     margin: 0;
     font-size: 18px;
 }
 
-.card p {
+.cards p {
     margin: 10px 0;
     font-size: 16px;
     color: #666;
