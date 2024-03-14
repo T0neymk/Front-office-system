@@ -30,7 +30,7 @@ $sql = "INSERT INTO booking (first_name, last_name, date, email, age, phone, gen
 
 if ($conn->query($sql) === TRUE) {
     // Redirect to pay.html after successful submission
-    header("Location: pay.html");
+    header("Location: pay.php");
     exit();
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;

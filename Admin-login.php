@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows == 1) {
             // Set session variable to indicate admin is logged in
             $_SESSION['admin_loggedin'] = true;
-            header("Location: dashboard.html"); // Redirect to dashboard page
+            header("Location: dashboard.php"); // Redirect to dashboard page
             exit(); // Prevent further execution
         } else {
             // If credentials are incorrect, display error message
