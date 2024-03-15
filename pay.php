@@ -1,74 +1,77 @@
+corrected code:
 <?php
 session_start();
-// M-Pesa API credentials
-$consumerKey = 'GTWADFxIpUfDoNikNGqq1C3023evM6UH';
-$consumerSecret = 'amFbAoUByPV2rM5A';
 
-// M-Pesa API endpoints
-$authUrl = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
-$paymentUrl = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Validate form data (you can add more validation as needed)
+    if (isset($_POST['amount']) && isset($_POST['phone'])) {
+        // Safaricom Daraja API credentials
+        $consumerKey = 'GTWADFxIpUfDoNikNGqq1C3023evM6UH';
+        $consumerSecret = 'amFbAoUByPV2rM5A';
 
-// Function to submit the form
-function submitForm() {
-    $id = isset($_POST['id']) ? $_POST['id'] : '';
-    $bid = isset($_POST['bid']) ? $_POST['bid'] : '';
-    $mpesanum = isset($_POST['mpesanum']) ? $_POST['mpesanum'] : '';
+        // Generate access token
+        $credentials = base64_encode($consumerKey . ':' . $consumerSecret);
+        $authHeaders = array(
+            'Content-Type: application/json',
+            'Authorization: Basic ' . $credentials
+        );
+        
+        $authUrl = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+        $authResponse = json_decode(file_get_contents($authUrl, false, stream_context_create(array(
+            'http' => array(
+                'method' => 'GET',
+                'header' => implode("\r\n", $authHeaders)
+            )
+        ))), true);
 
-    // Construct M-Pesa request
-    $requestData = array(
-        'BusinessShortCode' => '174379',
-        'Password' => base64_encode('174379' . 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919' . date('YmdHis')),
-        'Timestamp' => date('YmdHis'),
-        'TransactionType' => 'CustomerPayBillOnline',
-        'Amount' => $bid, 
-        'PartyA' => $mpesanum, 
-        'PartyB' => '174379',
-        'PhoneNumber' => $mpesanum, // Customer phone number
-        'CallBackURL' => 'https://chapo.rf.gd/callback.php',
-        'AccountReference' => 'account',
-        'TransactionDesc' => 'account'
-    );
+        $accessToken = $authResponse['access_token'];
 
-    // Generate access token
-    $credentials = base64_encode($GLOBALS['consumerKey'] . ':' . $GLOBALS['consumerSecret']);
-    $authHeaders = array(
-        'Content-Type: application/json',
-        'Authorization: Basic ' . $credentials
-    );
+        // Construct STK push request
+        $requestData = array(
+            'BusinessShortCode' => '174379',
+            'Password' => base64_encode('174379' . 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919' . date('YmdHis')),
+            'Timestamp' => date('YmdHis'),
+            'TransactionType' => 'CustomerPayBillOnline',
+            'Amount' => $_POST['amount'],
+            'PartyA' => $_POST['phone'],
+            'PartyB' => '174379',
+            'PhoneNumber' => $_POST['phone'],
+            'CallBackURL' => 'https://chapo.rf.gd/callback.php',
+            'AccountReference' => 'account',
+            'TransactionDesc' => 'Payment'
+        );
 
-    $authResponse = json_decode(file_get_contents($GLOBALS['authUrl'], false, stream_context_create(array(
-        'http' => array(
-            'method' => 'GET',
-            'header' => implode("\r\n", $authHeaders)
-        )
-    ))), true);
+        // Make STK push request
+        $stkPushUrl = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+        $stkPushHeaders = array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $accessToken
+        );
 
-    $accessToken = $authResponse['access_token'];
+        $stkPushResponse = json_decode(file_get_contents($stkPushUrl, false, stream_context_create(array(
+            'http' => array(
+                'method' => 'POST',
+                'header' => implode("\r\n", $stkPushHeaders),
+                'content' => json_encode($requestData)
+            )
+        ))), true);
 
-    // Make payment request
-    $paymentHeaders = array(
-        'Content-Type: application/json',
-        'Authorization: Bearer ' . $accessToken
-    );
-
-    $paymentResponse = json_decode(file_get_contents($GLOBALS['paymentUrl'], false, stream_context_create(array(
-        'http' => array(
-            'method' => 'POST',
-            'header' => implode("\r\n", $paymentHeaders),
-            'content' => json_encode($requestData)
-        )
-    ))), true);
-
-    // Handle payment response
-    if (isset($paymentResponse['ResponseCode']) && $paymentResponse['ResponseCode'] == '0') {
-        $_SESSION['payment_id'] = $id;
-        header("Location: pay.php");
-        exit();
+        // Handle STK push response
+        if (isset($stkPushResponse['ResponseCode']) && $stkPushResponse['ResponseCode'] == '0') {
+            // STK push request successful
+            $_SESSION['checkout_request_id'] = $stkPushResponse['CheckoutRequestID'];
+        } else {
+            // STK push request failed
+            echo 'STK push request failed. Error: ' . $stkPushResponse['errorMessage'];
+        }
     } else {
-        echo 'Payment request failed. Error: ' . $paymentResponse['errorMessage'];
+        // Form data is missing
+        echo 'Error: Form data is missing.';
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,15 +99,15 @@ function submitForm() {
     <a href="index.html">
         <img src="images/bicon.png" width="60px" height="40px" style="margin: 10px;" srcset="">
     </a>
-    <form id="mpesaForm" style="width: 400px;">
+    <form id="mpesaForm" action="" method="post" style="width: 400px;">
         <div class="titlex" style="display: flex;flex-direction: row;">
             <h5 class="text-muted" style="margin-top: 14px;">Pay via </h5>
             <img src="images/logox.png" alt="" srcset="" width="100px" height="60px" style="border-radius: 10px;">
         </div>
         <input type="text" name="fname" id="fname" class="form-control" style="border-radius: 10px;margin:10px;" placeholder="full name" required>
         <input type="text" name="amount" id="amount" class="form-control" style="border-radius: 10px;margin:10px;" placeholder="Type your amount" required>
-        <input type="text" name="phone" id="phone" class="form-control" style="border-radius: 10px;margin: 10px;" placeholder="phone (2547)" required>
-        <input type="button" value="pay" onclick="submitForm()" class="btn" style="background-color: #833556; color: white;margin: 10px;">
+        <input type="text" name="phone" id="phone" value="2547" class="form-control" style="border-radius: 10px;margin: 10px;" placeholder="phone (2547)" required>
+        <input type="submit" value="pay"  class="btn" style="background-color: #833556; color: white;margin: 10px;">
     </form>
 </body>
 </html>
