@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Prepare and bind parameters
     $stmt = $conn->prepare("INSERT INTO users (fname, lname, email, password) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $fname, $lname, $email, $password);
+    $stmt->bind_param("ssss", $fname, $lname, $email, $hashed_password);
 
     // Set parameters and execute
     $fname = $_POST['fname'];
@@ -24,8 +24,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
     if ($stmt->execute() === TRUE) {
-        echo "New record created successfully";
+        // Redirect user to services.html
+        header("Location: services.html");
+        exit(); // Ensure script stops execution after redirection
     } else {
         echo "Error: " . $stmt->error;
     }
@@ -33,3 +38,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
     $conn->close();
 }
+?>

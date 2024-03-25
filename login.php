@@ -17,23 +17,33 @@ if ($conn->connect_error) {
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-// SQL query to fetch user from database
-$sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
-$result = $conn->query($sql);
+// Prepare statement to fetch user from database
+$stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
 
 // Check if user exists
 if ($result->num_rows > 0) {
-    // User found, set login status in localStorage
-    echo "Login successful";
-    echo "<script>localStorage.setItem('isLoggedIn', 'true');</script>";
-    
-    // Redirect to services.html
-    echo "<script>window.location.href = 'services.html';</script>";
+    $user = $result->fetch_assoc();
+    // Verify hashed password
+    if (password_verify($password, $user['password'])) {
+        // Password matches, set login status in localStorage
+        echo "Login successful";
+        echo "<script>localStorage.setItem('isLoggedIn', 'true');</script>";
+        
+        // Redirect to services.html
+        echo "<script>window.location.href = 'services.html';</script>";
+    } else {
+        // Incorrect password
+        echo "Invalid email or password. Please try again.";
+    }
 } else {
-    // User not found or incorrect credentials
+    // User not found
     echo "Invalid email or password. Please try again.";
 }
 
-// Close connection
+// Close statement and connection
+$stmt->close();
 $conn->close();
 ?>

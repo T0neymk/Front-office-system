@@ -1,4 +1,4 @@
-corrected code:
+
 <?php
 session_start();
 
@@ -83,6 +83,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
     <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url(images/wellness.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+
+}
+        
         form {
             display: flex;
             flex-direction: column;
@@ -92,6 +105,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background */
+            backdrop-filter: blur(8px); /* Apply blur effect */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        input{
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            
+            padding: 8px;
+            border-radius: 4px;
+            border: none ;
         }
     </style>
 </head>
